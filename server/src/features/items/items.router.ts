@@ -1,5 +1,5 @@
 import express from "express";
-import { getItemDetail, getItems, upsertItem } from "./items.service";
+import { deleteItem, getItemDetail, getItems, upsertItem } from "./items.service";
 import { idNumberRequestSchema, itemPOSTRequestSchema } from "../types";
 import { ZodObject, ZodNumber, ZodTypeAny } from "zod";
 import { validate } from "../../middleware/validation.middleware";
@@ -12,7 +12,7 @@ itemsRouter.get("/", async (req, res) => {
     item.imageUrl = buildImageUrl(req, item.id);
   });
   res.json(items);
-} )
+})
 
 itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
   const data = idNumberRequestSchema.parse(req);
@@ -40,9 +40,17 @@ itemsRouter.post("/", validate(itemPOSTRequestSchema), async (req, res) => {
   }
 })
 
+itemsRouter.delete("/:id", validate(idNumberRequestSchema), async(req, res) => {
+  const data = idNumberRequestSchema.parse(req);
+  const item = await deleteItem(data.params.id);
+  if (item != null) {
+    res.json(item);
+  } else {
+    res.status(404).json({ message: "not found" });
+  }
+})
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 function buildImageUrl(req: any, id: number): string {
   return `${req.protocol}://${req.get("host")}/images/${id}.jpg`;
 }
-
-
