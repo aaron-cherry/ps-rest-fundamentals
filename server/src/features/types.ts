@@ -15,6 +15,7 @@ export const pagingRequestSchema = z.object({
   }),
 });
 
+//types for sending data from the server
 export type Item = {
   id: number;
   name: string;
@@ -25,6 +26,7 @@ export type ItemDetail = Item & {
   description: string | null;
 };
 
+//data transfer objects, for receiving data from client for creation/updating
 export const itemDTO = z.object({
   name: z.string(),
   description: z.nullable(z.string()),
